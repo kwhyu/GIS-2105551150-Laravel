@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>iPortfolio Bootstrap Template - Index</title>
+  <title>GIS-2105551150</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -213,10 +213,59 @@
           </div>
         </div>
         <script>
+    function getData() {
+      // Membuat instance dari XMLHttpRequest
+      var xhr = new XMLHttpRequest();
+      
+      // Mengatur metode dan URL endpoint untuk permintaan AJAX
+      xhr.open('GET', '{{ route("getMarker") }}');
+
+      // Menangani respon dari permintaan AJAX
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          // Parsing data JSON dari respon
+          var data = JSON.parse(xhr.responseText);
+          
+          // Loop melalui setiap item data
+          data.forEach(function(item) {
+            // Pisahkan data LatLng menjadi nilai latitude dan longitude
+            var latlng = item.latlng_rs.split(',');
+            var latitude = parseFloat(latlng[0]);
+            var longitude = parseFloat(latlng[1]);
+
+            // Buat marker pada peta menggunakan nilai latitude dan longitude
+            var marker = L.marker([latitude, longitude]).addTo(mymap);
+            marker.bindPopup('<div class="popup-content"><div class="popup-row"><span class="popup-col">ID RS:</span> ' + item.id_rs + '</div><div class="popup-row"><span class="popup-col">Nama RS:</span> ' + item.nama_rs + '</div><div class="popup-row"><span class="popup-col">Kelas:</span> ' + item.tipe_rs + '</div><div class="popup-row"><span class="popup-col">LatLng:</span> ' + item.latlng_rs + '</div></div>');
+          });
+        } else {
+          console.error('Gagal mengambil data:', xhr.statusText);
+        }
+      };
+
+      // Menangani kesalahan permintaan AJAX
+      xhr.onerror = function() {
+        console.error('Permintaan gagal:', xhr.statusText);
+      };
+
+      // Mengirim permintaan AJAX
+      xhr.send();
+    }
+
+    // Fungsi untuk mereset semua marker
+    function resetMarkers() {
+      // Hapus semua marker dari peta
+      mymap.eachLayer(function(layer) {
+        if (layer instanceof L.Marker) {
+          mymap.removeLayer(layer);
+        }
+      });
+    }
+  </script>
+        <!-- <script>
           function getData() {
-              // Mengambil data dari server Node.js menggunakan AJAX
               const xhr = new XMLHttpRequest();
-              xhr.open('GET', 'http://localhost:9090/getData');
+              get('{{ route("getData") }}')
+              // xhr.open('GET', 'http://localhost:9090/getData');
               // xhr.open('GET', 'http://localhost:9090/getData');
               xhr.onload = function() {
                   if (xhr.status === 200) {
@@ -261,7 +310,7 @@
                   // Kosongkan konten popup
                   // document.getElementById('info').innerHTML = '';
                 }
-              </script>
+              </script> -->
       </div>
     </section><!-- End About Section -->
 
@@ -273,8 +322,8 @@
           <h2>Input New Marker</h2>
         </div>
         <div class="form-input">
-          <form action="http://localhost:9090/tes" method="POST" enctype="multipart/form-data">
-          <!-- <form action="http://localhost:9090/tes" method="POST" enctype="multipart/form-data"> -->
+          <form action="{{ route('storeData') }}" method="POST" enctype="multipart/form-data">
+            @csrf
             <div class="mb-3">
               <label for="nama_rs" class="form-label">Nama Rumah Sakit</label>
               <input type="text" class="form-control" id="nama_rs" name="nama_rs" required>
@@ -296,7 +345,7 @@
             </div>
 
             <div class="mb-3">
-              <label for="gambar_rs" class="form-label">Alamat Rumah Sakit</label>
+              <label for="gambar_rs" class="form-label">Gambar Rumah Sakit</label>
               <input type="file" class="form-control" id="gambar_rs" name="gambar_rs" accept="image/*" required>
             </div>
 
@@ -315,24 +364,40 @@
           <h2>List Rumah Sakit Terdaftar</h2>
         </div>
         <div class="data_rs">
+          @php
+            $ar_judul = ['No','Nama','LatLng','Tipe','Alamat'];
+            $no = 1;
+          @endphp
           <table id="rsTable">
               <thead>
                   <tr>
-                      <th>ID RS</th>
-                      <th>Nama RS</th>
-                      <th>Tipe RS</th>
-                      <th>LatLng</th>
-                      <th>Alamat</th>
-                      <th>Gambar RS</th>
+                    @foreach($ar_judul as $jdl)
+                        <th>{{ $jdl }}</th>
+                    @endforeach
                   </tr>
               </thead>
               <tbody id="rsTableBody">
-                  <!-- Data akan ditampilkan di sini -->
+                @foreach($data as $d)
+                    <tr>
+                        <td>{{ $no++ }}</td>
+                        <td>{{ $d->nama_rs }}</td>
+                        <td>{{ $d->latlng_rs}}</td>
+                        <td>{{ $d->tipe_rs }}</td>
+                        <td>{{ $d->alamat_rs}}</td>
+                    </tr>
+                    <tr>
+                        @php
+                          $base64_image = base64_encode($d->gambar_rs);
+                          $image_src = 'data:image/jpeg;base64,' . $base64_image;
+                        @endphp
+                        <td><td><td><img src="{{ $image_src }}" alt="Gambar Rumah Sakit" style="width: 200px; height: 200px;"><td><td></td></td></td></td></td>
+                    </tr>
+
+                @endforeach
               </tbody>
           </table>
       </div>
-      
-      <script>
+      <!-- <script>
         // Ambil data dari server dan tampilkan dalam tabel
         fetch('http://localhost:9090/getData')
         // fetch('http://localhost:9090/getData')
@@ -355,7 +420,7 @@
             });
           })
           .catch(error => console.error('Error:', error));
-      </script>
+      </script> -->
         </div>
 
       </div>
