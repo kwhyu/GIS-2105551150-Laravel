@@ -10,7 +10,7 @@
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="{{ asset('assets/img/ooo.png') }}"  rel="icon">
+  <link href="{{ asset('assets/img/ooo.png') }}" rel="icon">
   <link href="{{ asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
@@ -27,7 +27,7 @@
   <!-- Map Stuff -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.min.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
   <!-- Template Main CSS File -->
   <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
@@ -86,38 +86,37 @@
 
           //Map Option
           var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-              maxZoom: 18,
+            attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+            maxZoom: 18,
           }).addTo(mymap);
 
           var OpenTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-              maxZoom: 17,
-              attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+            maxZoom: 17,
+            attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
           });
 
           var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-              attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
           });
 
           //Leaflet layer control
           var baseMaps = {
             'Base': osm,
-            'Topografi':OpenTopoMap,
-            'Imagery':Esri_WorldImagery
+            'Topografi': OpenTopoMap,
+            'Imagery': Esri_WorldImagery
           }
           L.control.layers(baseMaps).addTo(mymap)
 
           var markers = [];
           var isOnDrag = false;
-
           var myIcon = L.icon({
-            iconUrl: 'icon.png',
-            iconSize: [40, 40],
+            iconUrl: 'assets/img/logo.png',
+            iconSize: [35, 40],
             iconAnchor: [20, 40],
-        });
+          });
 
-        // Format popup content
-        formatContent = function(lat, lng, index){
+          // Format popup content
+          formatContent = function(lat, lng, index) {
             return `
                 <div class="wrapper">
                     <div class="row">
@@ -134,183 +133,117 @@
 
                 </div>
             `;
-        }
+          }
 
-        addMarker =  function(latlng,index){
+          addMarker = function(latlng, index) {
 
             // Menambahkan marker
-            var marker = L.marker(latlng,{
-                icon: myIcon,
-                draggable: true
+            var marker = L.marker(latlng, {
+              icon: myIcon,
+              draggable: true
             }).addTo(mymap);
 
             // Membuat popup baru
-            var popup = L.popup({ offset: [0, -30]})
-                .setLatLng(latlng);
-            
+            var popup = L.popup({
+                offset: [0, -30]
+              })
+              .setLatLng(latlng);
+
             // Binding popup ke marker
             marker.bindPopup(popup);
 
             // Menambahkan event listener pada marker
             marker.on('click', function() {
-                popup.setLatLng(marker.getLatLng()),
-                popup.setContent(formatContent(marker.getLatLng().lat,marker.getLatLng().lng,index));
+              popup.setLatLng(marker.getLatLng()),
+                popup.setContent(formatContent(marker.getLatLng().lat, marker.getLatLng().lng, index));
             });
 
             marker.on('dragstart', function(event) {
-                isOnDrag = true;
+              isOnDrag = true;
             });
 
             // Menambahkan event listener pada marker
             marker.on('drag', function(event) {
-                popup.setLatLng(marker.getLatLng()),
-                popup.setContent(formatContent(marker.getLatLng().lat,marker.getLatLng().lng,index));
-                marker.openPopup();
+              popup.setLatLng(marker.getLatLng()),
+                popup.setContent(formatContent(marker.getLatLng().lat, marker.getLatLng().lng, index));
+              marker.openPopup();
             });
 
             marker.on('dragend', function(event) {
-                setTimeout(function() {
-                    isOnDrag = false;
-                }, 500);
+              setTimeout(function() {
+                isOnDrag = false;
+              }, 500);
             });
 
             marker.on('contextmenu', function(event) {
-                // Hapus semua marker dari array markers
-                markers.forEach(function (m,i) {
-                    if(marker == m){
-                        m.removeFrom(mymap); // hapus marker dari peta
-                        markers.splice(i, 1);
-                    }
-                });
-                //console.log(markers);
+              // Hapus semua marker dari array markers
+              markers.forEach(function(m, i) {
+                if (marker == m) {
+                  m.removeFrom(mymap); // hapus marker dari peta
+                  markers.splice(i, 1);
+                }
+              });
+              //console.log(markers);
             });
 
             // Return marker
             return marker;
-        }
+          }
 
-        // Tambahkan event listener click pada peta
-        mymap.on('click', function(e) {
+          // Tambahkan event listener click pada peta
+          mymap.on('click', function(e) {
             console.log(isOnDrag);
-            if(!isOnDrag){
-                // Buat marker baru
-                var newMarker = addMarker(e.latlng,markers.length);
-                
-                // Tambahkan marker ke array markers
-                markers.push(newMarker);
-        console.log(markers);
+            if (!isOnDrag) {
+              // Buat marker baru
+              var newMarker = addMarker(e.latlng, markers.length);
+
+              // Tambahkan marker ke array markers
+              markers.push(newMarker);
+              console.log(markers);
             }
-        });
+          });
         </script>
       </div>
       <div class="container">
         <div class="base">
           <div class="kiri">
-            <button onclick="getData()" type="button" class="btn btn-dark">Tampilkan Marker</button>
+            <button onclick="getMarker()" type="button" class="btn btn-dark">Tampilkan Marker</button>
           </div>
           <div class="kanan">
             <button onclick="resetMarkers()" type="button" class="btn btn-dark">Reset Marker</button>
           </div>
         </div>
         <script>
-    function getData() {
-      // Membuat instance dari XMLHttpRequest
-      var xhr = new XMLHttpRequest();
-      
-      // Mengatur metode dan URL endpoint untuk permintaan AJAX
-      xhr.open('GET', '{{ route("getMarker") }}');
-
-      // Menangani respon dari permintaan AJAX
-      xhr.onload = function() {
-        if (xhr.status === 200) {
-          // Parsing data JSON dari respon
-          var data = JSON.parse(xhr.responseText);
-          
-          // Loop melalui setiap item data
-          data.forEach(function(item) {
-            // Pisahkan data LatLng menjadi nilai latitude dan longitude
-            var latlng = item.latlng_rs.split(',');
-            var latitude = parseFloat(latlng[0]);
-            var longitude = parseFloat(latlng[1]);
-
-            // Buat marker pada peta menggunakan nilai latitude dan longitude
-            var marker = L.marker([latitude, longitude]).addTo(mymap);
-            marker.bindPopup('<div class="popup-content"><div class="popup-row"><span class="popup-col">ID RS:</span> ' + item.id_rs + '</div><div class="popup-row"><span class="popup-col">Nama RS:</span> ' + item.nama_rs + '</div><div class="popup-row"><span class="popup-col">Kelas:</span> ' + item.tipe_rs + '</div><div class="popup-row"><span class="popup-col">LatLng:</span> ' + item.latlng_rs + '</div></div>');
+          function getMarker() {
+            var rsIcon = L.icon({
+            iconUrl: 'assets/img/rs.png',
+            iconSize: [35, 40],
+            iconAnchor: [20, 40],
           });
-        } else {
-          console.error('Gagal mengambil data:', xhr.statusText);
-        }
-      };
+            fetch("{{ route('getMarker') }}")
+              .then(response => response.json())
+              .then(data => {
+                data.forEach(item => {
+                  var latlng = item.latlng_rs.split(',');
+                  var latitude = parseFloat(latlng[0]);
+                  var longitude = parseFloat(latlng[1]);
 
-      // Menangani kesalahan permintaan AJAX
-      xhr.onerror = function() {
-        console.error('Permintaan gagal:', xhr.statusText);
-      };
-
-      // Mengirim permintaan AJAX
-      xhr.send();
-    }
-
-    // Fungsi untuk mereset semua marker
-    function resetMarkers() {
-      // Hapus semua marker dari peta
-      mymap.eachLayer(function(layer) {
-        if (layer instanceof L.Marker) {
-          mymap.removeLayer(layer);
-        }
-      });
-    }
-  </script>
-        <!-- <script>
-          function getData() {
-              const xhr = new XMLHttpRequest();
-              get('{{ route("getData") }}')
-              // xhr.open('GET', 'http://localhost:9090/getData');
-              // xhr.open('GET', 'http://localhost:9090/getData');
-              xhr.onload = function() {
-                  if (xhr.status === 200) {
-                    const data = JSON.parse(xhr.responseText);
-                    // Loop melalui setiap item data
-                    data.forEach(item => {
-                    // Pisahkan data LatLng menjadi nilai latitude dan longitude
-                    const latlng = item.latlng_rs.split(',');
-                    const latitude = parseFloat(latlng[0]);
-                    const longitude = parseFloat(latlng[1]);
-
-                    // Buat marker pada peta menggunakan nilai latitude dan longitude
-                    markers = L.marker([latitude, longitude]).addTo(mymap);
-                    // marker.bindPopup(`<b>Nama RS:</b> ${item.nama_rs}<br><b>Alamat:</b> ${item.alamat_rs}`);
-                    markers.bindPopup(`<div class="popup-content">
-                                <div class="popup-row"><span class="popup-col">ID RS:</span> ${item.id_rs}</div>
-                                <div class="popup-row"><span class="popup-col">Nama RS:</span> ${item.nama_rs}</div>
-                                <div class="popup-row"><span class="popup-col">Kelas:</span> ${item.tipe_rs}</div>
-                                <div class="popup-row"><span class="popup-col">LatLng:</span> ${item.latlng_rs}</div>
-                            </div>`);
-                      });
-                      // Memindahkan konten popup ke dalam div dengan id 'info'
-                      document.getElementById('dataContainer').innerHTML = content;
-                  } else {
-                      console.error('Failed to fetch data:', xhr.statusText);
-                  }
-              };
-              xhr.onerror = function() {
-                  console.error('Request failed:', xhr.statusText);
-              };
-              xhr.send();
+                  // Buat marker pada peta menggunakan nilai latitude dan longitude
+                  var marker = L.marker([latitude, longitude], { icon: rsIcon }).addTo(mymap);
+                  marker.bindPopup('<div class="popup-content"><div class="popup-row"><span class="popup-col">ID RS:</span> ' + item.id_rs + '</div><div class="popup-row"><span class="popup-col">Nama RS:</span> ' + item.nama_rs + '</div><div class="popup-row"><span class="popup-col">Kelas:</span> ' + item.tipe_rs + '</div><div class="popup-row"><span class="popup-col">LatLng:</span> ' + item.latlng_rs + '</div></div>');
+                });
+              })
+              .catch(error => console.error('Error:', error));
           }
-      </script>
-              <script>
-                function resetMarkers() {
-                  // Hapus semua marker dari peta
-                  for (var i = 0; i < markers.length; i++) {
-                    mymap.removeLayer(markers[i]);
-                  }
-                  // Kosongkan array markers
-                  markers = [];
-                  // Kosongkan konten popup
-                  // document.getElementById('info').innerHTML = '';
-                }
-              </script> -->
+
+          function resetMarkers() {
+            mymap.eachLayer(function(layer) {
+              if (layer instanceof L.Marker) {
+                mymap.removeLayer(layer);
+              }
+            });
+          }
+        </script>
       </div>
     </section><!-- End About Section -->
 
@@ -365,66 +298,53 @@
         </div>
         <div class="data_rs">
           @php
-            $ar_judul = ['No','Nama','LatLng','Tipe','Alamat'];
-            $no = 1;
+          $ar_judul = ['No','Nama','LatLng','Tipe','Alamat'];
+          $no = 1;
           @endphp
           <table id="rsTable">
-              <thead>
-                  <tr>
-                    @foreach($ar_judul as $jdl)
-                        <th>{{ $jdl }}</th>
-                    @endforeach
-                  </tr>
-              </thead>
-              <tbody id="rsTableBody">
-                @foreach($data as $d)
-                    <tr>
-                        <td>{{ $no++ }}</td>
-                        <td>{{ $d->nama_rs }}</td>
-                        <td>{{ $d->latlng_rs}}</td>
-                        <td>{{ $d->tipe_rs }}</td>
-                        <td>{{ $d->alamat_rs}}</td>
-                    </tr>
-                    <tr>
-                        @php
-                          $base64_image = base64_encode($d->gambar_rs);
-                          $image_src = 'data:image/jpeg;base64,' . $base64_image;
-                        @endphp
-                        <td><td><td><img src="{{ $image_src }}" alt="Gambar Rumah Sakit" style="width: 200px; height: 200px;"><td><td></td></td></td></td></td>
-                    </tr>
-
+            <thead>
+              <tr>
+                @foreach($ar_judul as $jdl)
+                <th>{{ $jdl }}</th>
                 @endforeach
-              </tbody>
+              </tr>
+            </thead>
+            <tbody id="rsTableBody">
+              @if(isset($data) && count($data) > 0)
+              @foreach($data as $dx)
+              <tr>
+                <td>{{ $no++ }}</td>
+                <td>{{ $dx->nama_rs }}</td>
+                <td>{{ $dx->latlng_rs}}</td>
+                <td>{{ $dx->tipe_rs }}</td>
+                <td>{{ $dx->alamat_rs}}</td>
+              </tr>
+              <tr>
+                @php
+                $base64_image = base64_encode($dx->gambar_rs);
+                $image_src = 'data:image/jpeg;base64,' . $base64_image;
+                @endphp
+                <td>
+                <td>
+                <td><img src="{{ $image_src }}" alt="Gambar Rumah Sakit" style="width: 400px; height: 300px;">
+                <td>
+                <td></td>
+                </td>
+                </td>
+                </td>
+                </td>
+              </tr>
+              @endforeach
+              @else
+              <p>Tidak ada data tersedia</p>
+              @endif
+            </tbody>
           </table>
-      </div>
-      <!-- <script>
-        // Ambil data dari server dan tampilkan dalam tabel
-        fetch('http://localhost:9090/getData')
-        // fetch('http://localhost:9090/getData')
-          .then(response => response.json())
-          .then(data => {
-            const rsTableBody = document.getElementById('rsTableBody');
-      
-            data.forEach(rs => {
-              const row = `
-                <tr>
-                  <td>${rs.id_rs}</td>
-                  <td>${rs.nama_rs}</td>
-                  <td>${rs.tipe_rs}</td>
-                  <td>${rs.latlng_rs}</td>
-                  <td>${rs.alamat_rs}</td>
-                  <td><img src="http://localhost:9090/getImage/${rs.id_rs} "style="max-width: 400px; max-height: 300px;" alt="Gambar RS"></td>
-                </tr>
-              `;
-              rsTableBody.innerHTML += row;
-            });
-          })
-          .catch(error => console.error('Error:', error));
-      </script> -->
         </div>
+      </div>
 
       </div>
-    </section><!-- End Resume Section -->
+    </section>
   </main><!-- End #main -->
 
   <!-- ======= Footer ======= -->
@@ -451,7 +371,7 @@
 
   <!-- Template Main JS File -->
   <script src="{{ asset('assets/js/main.js') }}"></script>
-  <script src="{{ asset('assets/js/server.js') }}"></script>
+  <!-- <script src="{{ asset('assets/js/server.js') }}"></script> -->
 
 </body>
 

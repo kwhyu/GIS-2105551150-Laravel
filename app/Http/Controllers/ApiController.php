@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use JWTAuth;
 use App\Models\User;
+use App\Models\Data;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Symfony\Component\HttpFoundation\Response;
@@ -114,4 +115,49 @@ class ApiController extends Controller
             //'expired' => JWTAuth::getPayload($request->token)->toArray()['exp'] - time() . ' second(s)',
         ], 200);
     }
+///////////////////////////////////////
+    public function addData(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nama_rs' => 'required|string',
+            'latlng_rs' => 'required|string',
+            'tipe_rs' => 'required|string',
+            'gambar_rs' => 'required|image',
+            'alamat_rs' => 'required|string',
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages()], 422);
+        }
+
+        $rs = Data::create([
+            'nama_rs' => $request->nama_rs,
+            'latlng_rs' => $request->latlng_rs,
+            'tipe_rs' => $request->tipe_rs,
+            'gambar_rs' => $request->gambar_rs,
+            'alamat_rs' => $request->alamat_rs,
+
+
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Rumah Sakit berhasil ditambahkan',
+            'data' => $rs
+        ], Response::HTTP_CREATED);
+    }
+
+    public function getData(Request $request)
+    {
+        $rs = Data::all();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Success',
+            'data' => $rs
+        ], Response::HTTP_OK);
+    }
+
+
 }
