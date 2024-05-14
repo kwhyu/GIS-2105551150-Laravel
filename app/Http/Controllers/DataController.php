@@ -58,7 +58,6 @@ class DataController extends Controller
             'gambar_rs' => $gambar,
             // 'gambar_rs' => $validatedData['gambar_rs'],
             'alamat_rs' => $validatedData['alamat_rs'],
-
             // Sesuaikan dengan nama-nama field yang ada pada tabel
         ]);
 
@@ -72,21 +71,68 @@ class DataController extends Controller
     {
         // Logika untuk menampilkan detail pengguna
     }
-// Fungsi untuk menampilkan formulir edit pengguna berdasarkan ID
-    public function edit($id)
+    // Fungsi untuk menampilkan formulir edit pengguna berdasarkan ID
+    public function edit($id_rs)
     {
-        // Logika untuk menampilkan formulir edit pengguna pp
-    }
+        $data = Data::findOrFail($id_rs);
+        return view('editRS', compact('data'));
+    }    
 
-    // Fungsi untuk memperbarui pengguna berdasarkan ID
-    public function update(Request $request, $id)
+    public function update(Request $request, $id_rs)
     {
-        // Logika untuk memperbarui pengguna
+        // Validasi data yang diterima
+        $validatedData = $request->validate([
+            'nama_rs' => 'sometimes|string',
+            'latlng_rs' => 'sometimes|string',
+            'tipe_rs' => 'sometimes|string',
+            'alamat_rs' => 'sometimes|string',
+            'gambar_rs' => 'sometimes|image',
+        ]);
+
+        // Temukan data yang ingin diperbarui
+        $data = Data::findOrFail($id_rs);
+
+        // Mengambil data yang diperlukan dari formulir
+        if ($request->has('nama_rs')) {
+            $data->nama_rs = $request->input('nama_rs');
+        }
+        if ($request->has('latlng_rs')) {
+            $data->latlng_rs = $request->input('latlng_rs');
+        }
+        if ($request->has('tipe_rs')) {
+            $data->tipe_rs = $request->input('tipe_rs');
+        }
+        if ($request->has('alamat_rs')) {
+            $data->alamat_rs = $request->input('alamat_rs');
+        }
+
+        // Jika ada gambar yang diunggah, simpan ke dalam tipe data blob image
+        if ($request->hasFile('gambar_rs')) {
+            $image = $request->file('gambar_rs');
+            $imageData = file_get_contents($image->getRealPath());
+            $data->gambar_rs = $imageData;
+        }
+
+        // Perbarui data
+        $data->save();
+
+        return redirect('/index')->with('success', 'Data berhasil diperbarui.');
     }
+    
+    
+    // Fungsi untuk memperbarui pengguna berdasarkan ID 
+    // public function update(Request $request, $id_rs)
+    // {
+    //     $data = Data::findOrFail($id_rs);
+    //     $data->update($request->all());
+
+    //     return redirect('/index')->with('success', 'Data berhasil diperbarui.');
+    // }
 
     // Fungsi untuk menghapus pengguna berdasarkan ID
-    public function destroy($id)
+    public function destroy($id_rs): RedirectResponse
     {
-        // Logika untuk menghapus pengguna
+        Data::where('id_rs', $id_rs)->delete();
+        return redirect('/index')->with('success', 'Data berhasil dihapus.');
     }
 }

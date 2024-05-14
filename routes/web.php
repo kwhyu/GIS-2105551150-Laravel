@@ -19,15 +19,18 @@ use Illuminate\Support\Facades\Auth;
 */
 
 // Route::get('/', function () {
-//     // Cek apakah pengguna sudah login
-//     if (Auth::check()) {
-//         // Jika sudah login, arahkan ke halaman index
-//         return redirect('/index');
-//     } else {
-//         // Jika belum login, arahkan ke halaman login
-//         return view('auth.login');
-//     }
+//     return view('/index');
 // });
+
+// Route::get('/', [DataController::class, 'getData'])->name('getData');
+
+// Route::resource('/data',DataController::class);
+// Route::delete('/data/{id}', [DataController::class, 'destroy'])->name('data.destroy');
+
+
+///////////////////////////////////////////////////////
+
+
 
 Route::get('/index', function () {
     return view('/index');
@@ -45,6 +48,12 @@ Route::post('/register', [AuthController::class, 'store']);
 Route::get('/index', [DataController::class, 'getData'])->name('getData');
 Route::post('/store-data', [DataController::class, 'storeData'])->name('storeData');
 Route::get('/get-marker', [DataController::class, 'getMarker'])->name('getMarker');
+
+Route::delete('/delete-data/{id_rs}', [DataController::class, 'destroy'])->name('data.destroy');
+
+Route::get('/data/{id_rs}/edit', [DataController::class, 'edit'])->name('data.edit');
+Route::put('/data/{id_rs}', [DataController::class, 'update'])->name('data.update');
+
 
 
 

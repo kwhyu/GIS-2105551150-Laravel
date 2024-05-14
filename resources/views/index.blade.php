@@ -298,7 +298,7 @@
         </div>
         <div class="data_rs">
           @php
-          $ar_judul = ['No','Nama','LatLng','Tipe','Alamat'];
+          $ar_judul = ['No','Nama','LatLng','Tipe','Alamat','Update','Delete'];
           $no = 1;
           @endphp
           <table id="rsTable">
@@ -318,6 +318,23 @@
                 <td>{{ $dx->latlng_rs}}</td>
                 <td>{{ $dx->tipe_rs }}</td>
                 <td>{{ $dx->alamat_rs}}</td>
+                <td>
+                <form method="GET" action="{{ route('data.edit', ['id_rs' => $dx->id_rs]) }}">
+                    @csrf
+                    <button type="submit" class="btn btn-primary btn-sm" title="Update Data">
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                  </form>
+                </td>
+                <td>
+                  <form method="POST" action="{{ route('data.destroy', $dx->id_rs) }}">
+                    @csrf
+                    @method('DELETE')
+                      <button type="submit" class="btn btn-danger btn-sm show-alert-delete-box" title="Hapus Asset">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                  </form>
+                </td>
               </tr>
               <tr>
                 @php
@@ -326,9 +343,13 @@
                 @endphp
                 <td>
                 <td>
+                <td>
                 <td><img src="{{ $image_src }}" alt="Gambar Rumah Sakit" style="width: 400px; height: 300px;">
                 <td>
+                <td>
                 <td></td>
+                </td>
+                </td>
                 </td>
                 </td>
                 </td>

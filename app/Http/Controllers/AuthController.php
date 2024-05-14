@@ -39,7 +39,7 @@ class AuthController extends Controller
         // Autentikasi user
         Auth::login($user);
 
-        return redirect('/login'); // Ganti dengan halaman setelah registrasi berhasil
+        return redirect('/'); // Ganti dengan halaman setelah registrasi berhasil
     }
 
     public function login(Request $request)
